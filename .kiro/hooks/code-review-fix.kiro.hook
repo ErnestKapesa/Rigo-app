@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Code Review & Design Fix",
+  "description": "Automatically reviews code changes in HTML, CSS, and JavaScript files and provides suggestions to fix design issues, improve code quality, and ensure adherence to project guidelines",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.html",
+      "*.css",
+      "*.js",
+      "Rigo-AI/*.html",
+      "Rigo-AI/css/*.css",
+      "Rigo-AI/js/*.js",
+      "css/*.css",
+      "js/*.js"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the code changes in the edited file and analyze for design issues, code quality problems, and adherence to the Rigo-AI project guidelines. Focus on:\n\n1. **Design Issues**: Check color scheme consistency (agririgo green #04CB57), responsive design, accessibility compliance\n2. **Code Quality**: Verify semantic HTML5, BEM naming conventions, proper error handling in JavaScript\n3. **Project Standards**: Ensure compliance with the development guidelines including API integration patterns, file structure, and coding standards\n4. **Functionality**: Identify potential bugs, performance issues, or security concerns\n\nProvide specific, actionable fixes and improvements. If the changes look good, acknowledge the quality work."
+  }
+}
