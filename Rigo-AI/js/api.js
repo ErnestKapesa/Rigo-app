@@ -27,7 +27,7 @@ class HuggingFaceAPI {
             const isSoil = await this.validateSoilImage(visionResult);
             
             if (!isSoil) {
-                throw new Error('This does not appear to be a soil image. Please upload a clear photo of soil.');
+                throw new Error('❌ No Soil Found in the Image. Please upload a clear photo of soil.');
             }
             
             console.log('✅ Soil detected - Processing analysis...');

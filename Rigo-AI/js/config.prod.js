@@ -6,9 +6,8 @@ const CONFIG = {
     // Hugging Face API Configuration
     // Get your token from: https://huggingface.co/settings/tokens
     // Add it to Vercel: Settings > Environment Variables > HF_API_TOKEN
-    HF_API_TOKEN: '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', // Replace with your token
-    HF_MODEL_ID: 'facebook/bart-large-mnli',
-    HF_VISION_MODEL: 'google/vit-base-patch16-224',
+    HF_API_TOKEN: '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',
+    HF_MODEL_ID: 'google/vit-base-patch16-224', // Vision Transformer for images
     HF_API_URL: 'https://api-inference.huggingface.co/models/',
     
     // Soil type labels for classification

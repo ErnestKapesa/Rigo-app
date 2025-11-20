@@ -5,8 +5,7 @@ const CONFIG = {
     // Hugging Face API Configuration
     // Get your token from: https://huggingface.co/settings/tokens
     HF_API_TOKEN: 'YOUR_HUGGING_FACE_TOKEN_HERE',
-    HF_MODEL_ID: 'facebook/bart-large-mnli',
-    HF_VISION_MODEL: 'google/vit-base-patch16-224',
+    HF_MODEL_ID: 'google/vit-base-patch16-224', // Vision Transformer for image classification
     HF_API_URL: 'https://api-inference.huggingface.co/models/',
     
     // Soil type labels for classification
