@@ -1,0 +1,27 @@
+# Documentation
+*.md
+!README.md
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+.kiro
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test files
+test.html
+diagnostic.html
+status.html
+
+# Local config (will be replaced with env vars)
+Rigo-AI/js/config.local.js

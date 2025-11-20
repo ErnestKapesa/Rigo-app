@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rigo-AI Diagnostic</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #04CB57;
+        }
+        .status { margin: 10px 0; padding: 10px; background: #2a2a2a; border-left: 4px solid #04CB57; }
+        .error { border-left-color: #ff4444; color: #ff4444; }
+        .success { border-left-color: #04CB57; color: #04CB57; }
+        button { background: #04CB57; color: white; border: none; padding: 10px 20px; margin: 10px 0; cursor: pointer; }
+        button:hover { background: #039647; }
+        #console { background: #000; color: #0f0; padding: 15px; margin-top: 20px; max-height: 400px; overflow-y: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Rigo-AI System Diagnostic</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="runTests()">Run All Tests</button>
+    <button onclick="testUpload()">Test File Upload</button>
+    <button onclick="testAnalysis()">Test Mock Analysis</button>
+    <button onclick="testPDF()">Test PDF Generation</button>
+    
+    <input type="file" id="testFile" accept="image/*" style="display:none">
+    
+    <h3>Console Output:</h3>
+    <div id="console"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        const consoleDiv = document.getElementById('console');
+        
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            consoleDiv.innerHTML += `<div style="color:#0f0">[LOG] ${args.join(' ')}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            consoleDiv.innerHTML += `<div style="color:#f00">[ERROR] ${args.join(' ')}</div>`;
+            consoleDiv.scrollHeight;
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            consoleDiv.innerHTML += `<div style="color:#ff0">[WARN] ${args.join(' ')}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        };
+        
+        function addStatus(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = `status ${isError ? 'error' : 'success'}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+        
+        async function runTests() {
+            results.innerHTML = '';
+            consoleDiv.innerHTML = '';
+            console.log('Starting diagnostic tests...');
+            
+            // Test 1: Check if modules load
+            try {
+                const { default: CONFIG } = await import('./js/config.js');
+                addStatus('✅ Config module loaded');
+                console.log('Config:', CONFIG);
+            } catch (e) {
+                addStatus('❌ Config module failed: ' + e.message, true);
+            }
+            
+            // Test 2: Check API module
+            try {
+                const { default: api } = await import('./js/api.js');
+                addStatus('✅ API module loaded');
+            } catch (e) {
+                addStatus('❌ API module failed: ' + e.message, true);
+            }
+            
+            // Test 3: Check Supabase module
+            try {
+                const { default: supabase } = await import('./js/supabase-client.js');
+                addStatus('✅ Supabase module loaded');
+            } catch (e) {
+                addStatus('❌ Supabase module failed: ' + e.message, true);
+            }
+            
+            // Test 4: Check App module
+            try {
+                const { default: app } = await import('./js/app.js');
+                addStatus('✅ App module loaded');
+            } catch (e) {
+                addStatus('❌ App module failed: ' + e.message, true);
+            }
+            
+            // Test 5: Check jsPDF
+            if (typeof window.jspdf !== 'undefined') {
+                addStatus('✅ jsPDF library loaded');
+            } else {
+                addStatus('❌ jsPDF library not loaded', true);
+            }
+            
+            // Test 6: Check Supabase CDN
+            if (typeof window.supabase !== 'undefined') {
+                addStatus('✅ Supabase CDN loaded');
+            } else {
+                addStatus('⚠️ Supabase CDN not loaded (OK for demo mode)');
+            }
+            
+            console.log('Diagnostic tests complete');
+        }
+        
+        function testUpload() {
+            document.getElementById('testFile').click();
+            document.getElementById('testFile').onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    addStatus(`✅ File selected: ${file.name} (${(file.size/1024).toFixed(2)}KB)`);
+                    console.log('File details:', file);
+                }
+            };
+        }
+        
+        async function testAnalysis() {
+            try {
+                const { default: api } = await import('./js/api.js');
+                addStatus('Running mock analysis...');
+                const result = await api.getMockAnalysis();
+                addStatus('✅ Mock analysis successful');
+                console.log('Analysis result:', result);
+            } catch (e) {
+                addStatus('❌ Analysis failed: ' + e.message, true);
+            }
+        }
+        
+        async function testPDF() {
+            try {
+                if (typeof window.jspdf === 'undefined') {
+                    throw new Error('jsPDF not loaded');
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.text('Test PDF', 10, 10);
+                doc.save('test.pdf');
+                addStatus('✅ PDF generation successful');
+            } catch (e) {
+                addStatus('❌ PDF generation failed: ' + e.message, true);
+            }
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+    
+    <!-- Load libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

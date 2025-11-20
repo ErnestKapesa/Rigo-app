@@ -1,5 +1,7 @@
 // Supabase client initialization and utilities
-import CONFIG from './config.js';
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const configModule = isProduction ? './config.prod.js' : './config.local.js';
+const { default: CONFIG } = await import(configModule);
 
 class SupabaseClient {
     constructor() {
@@ -11,17 +13,27 @@ class SupabaseClient {
     async init() {
         if (!CONFIG.SUPABASE_URL || !CONFIG.SUPABASE_ANON_KEY) {
             console.warn('Supabase not configured. Running in demo mode.');
+            this.initialized = false;
             return false;
         }
 
         try {
+            // Check if Supabase is loaded from CDN
+            if (typeof window.supabase === 'undefined') {
+                console.warn('Supabase library not loaded. Running in demo mode.');
+                this.initialized = false;
+                return false;
+            }
+            
             // Load Supabase from CDN
-            const { createClient } = supabase;
+            const { createClient } = window.supabase;
             this.client = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
             this.initialized = true;
+            console.log('✅ Supabase initialized');
             return true;
         } catch (error) {
             console.error('Failed to initialize Supabase:', error);
+            this.initialized = false;
             return false;
         }
     }

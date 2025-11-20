@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rigo-AI Status Check</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 40px;
+            background: linear-gradient(135deg, #04CB57 0%, #039647 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #04CB57; margin-bottom: 30px; }
+        .status-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #ddd;
+        }
+        .status-item.success {
+            background: #E8F8F0;
+            border-left-color: #04CB57;
+        }
+        .status-item.error {
+            background: #FFE8E8;
+            border-left-color: #ff4444;
+        }
+        .status-item.warning {
+            background: #FFF8E8;
+            border-left-color: #FFA500;
+        }
+        .icon { font-size: 24px; margin-right: 10px; }
+        button {
+            background: #04CB57;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover { background: #039647; }
+        #console {
+            background: #1a1a1a;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 Rigo-AI System Status</h1>
+        <div id="status"></div>
+        
+        <div style="margin-top: 30px;">
+            <button onclick="checkStatus()">🔄 Refresh Status</button>
+            <button onclick="window.location.href='analyze.html'">🚀 Go to Analyzer</button>
+            <button onclick="window.location.href='diagnostic.html'">🔧 Run Diagnostics</button>
+        </div>
+        
+        <div id="console"></div>
+    </div>
+    
+    <script type="module">
+        import CONFIG from './js/config.local.js';
+        
+        const statusDiv = document.getElementById('status');
+        const consoleDiv = document.getElementById('console');
+        
+        function log(message, type = 'info') {
+            const color = type === 'error' ? '#f00' : type === 'warn' ? '#ff0' : '#0f0';
+            consoleDiv.innerHTML += `<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function addStatus(icon, title, message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `status-item ${type}`;
+            div.innerHTML = `<span class="icon">${icon}</span><strong>${title}:</strong> ${message}`;
+            statusDiv.appendChild(div);
+        }
+        
+        async function checkStatus() {
+            statusDiv.innerHTML = '';
+            consoleDiv.innerHTML = '';
+            log('Starting system check...');
+            
+            // Check 1: Hugging Face Configuration
+            if (CONFIG.HF_API_TOKEN && CONFIG.HF_API_TOKEN.trim() !== '') {
+                addStatus('✅', 'Hugging Face AI', 'CONFIGURED - Using REAL AI analysis', 'success');
+                log('✅ Hugging Face token found: ' + CONFIG.HF_API_TOKEN.substring(0, 10) + '...');
+                log('✅ Model: ' + CONFIG.HF_MODEL_ID);
+                log('✅ API URL: ' + CONFIG.HF_API_URL);
+            } else {
+                addStatus('⚠️', 'Hugging Face AI', 'NOT CONFIGURED - Using demo mode with mock data', 'warning');
+                log('⚠️ No Hugging Face token - demo mode active');
+            }
+            
+            // Check 2: Supabase Configuration
+            if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) {
+                addStatus('✅', 'Supabase Backend', 'CONFIGURED - Data will be saved', 'success');
+                log('✅ Supabase configured');
+            } else {
+                addStatus('ℹ️', 'Supabase Backend', 'NOT CONFIGURED - Analysis won\'t be saved (optional)', 'warning');
+                log('ℹ️ Supabase not configured (optional)');
+            }
+            
+            // Check 3: PDF Generation
+            if (typeof window.jspdf !== 'undefined') {
+                addStatus('✅', 'PDF Generation', 'READY - Reports can be downloaded', 'success');
+                log('✅ jsPDF library loaded');
+            } else {
+                addStatus('❌', 'PDF Generation', 'NOT AVAILABLE - jsPDF library not loaded', 'error');
+                log('❌ jsPDF library missing');
+            }
+            
+            // Check 4: Test API Connection
+            if (CONFIG.HF_API_TOKEN && CONFIG.HF_API_TOKEN.trim() !== '') {
+                addStatus('🔄', 'API Connection', 'Testing connection to Hugging Face...', 'warning');
+                log('🔄 Testing Hugging Face API...');
+                
+                try {
+                    const response = await fetch(CONFIG.HF_API_URL + CONFIG.HF_MODEL_ID, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${CONFIG.HF_API_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ inputs: "test" })
+                    });
+                    
+                    if (response.ok || response.status === 503) {
+                        // 503 means model is loading, which is fine
+                        addStatus('✅', 'API Connection', 'SUCCESS - Hugging Face API is reachable', 'success');
+                        log('✅ API connection successful');
+                    } else {
+                        const text = await response.text();
+                        addStatus('⚠️', 'API Connection', `Response: ${response.status} - ${text.substring(0, 100)}`, 'warning');
+                        log('⚠️ API response: ' + response.status);
+                    }
+                } catch (error) {
+                    addStatus('❌', 'API Connection', 'FAILED - ' + error.message, 'error');
+                    log('❌ API test failed: ' + error.message, 'error');
+                }
+            }
+            
+            // Summary
+            log('System check complete!');
+            
+            if (CONFIG.HF_API_TOKEN && CONFIG.HF_API_TOKEN.trim() !== '') {
+                log('🎉 READY FOR PRODUCTION - Real AI analysis enabled!');
+            } else {
+                log('⚠️ DEMO MODE - Add Hugging Face token for real AI');
+            }
+        }
+        
+        // Auto-run on load
+        window.checkStatus = checkStatus;
+        window.addEventListener('load', checkStatus);
+    </script>
+    
+    <!-- Load jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

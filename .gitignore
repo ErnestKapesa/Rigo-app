@@ -1,5 +1,6 @@
 # Environment variables
 .env
+*.local.js
 
 # macOS
 .DS_Store
@@ -13,3 +14,4 @@ node_modules/
 
 # Logs
 *.log
+.vercel
