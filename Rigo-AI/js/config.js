@@ -1,19 +1,29 @@
-// Rigo-AI Configuration
-// Replace the placeholder values with your actual API keys
+// Universal configuration that works everywhere
+// This file auto-detects environment and uses appropriate config
 
 const CONFIG = {
     // Hugging Face API Configuration
-    // SECURITY WARNING: Never commit API tokens to source control!
-    // For production, use a backend proxy to keep tokens secure
-    // Leave empty for demo mode with mock data
-    HF_API_TOKEN: '', // Add your token here for local testing only
-    HF_MODEL_ID: 'google/vit-base-patch16-224',
+    HF_API_TOKEN: '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',
+    HF_MODEL_ID: 'facebook/bart-large-mnli',
+    HF_VISION_MODEL: 'google/vit-base-patch16-224',
     HF_API_URL: 'https://api-inference.huggingface.co/models/',
     
-    // Supabase Configuration
-    // Get these from: https://supabase.com/dashboard/project/_/settings/api
-    SUPABASE_URL: '', // Leave empty for demo mode, or add: 'https://xxxxx.supabase.co'
-    SUPABASE_ANON_KEY: '', // Leave empty for demo mode, or add: 'eyJxxx...'
+    // Soil type labels for classification
+    SOIL_LABELS: [
+        'clay soil',
+        'sandy soil', 
+        'loamy soil',
+        'silty soil',
+        'peaty soil',
+        'chalky soil',
+        'red soil',
+        'black soil',
+        'not soil - invalid image'
+    ],
+    
+    // Supabase Configuration (optional)
+    SUPABASE_URL: '',
+    SUPABASE_ANON_KEY: '',
     
     // Application Settings
     MAX_IMAGE_SIZE: 5242880, // 5MB in bytes

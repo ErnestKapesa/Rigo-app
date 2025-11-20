@@ -1,6 +1,7 @@
 # Environment variables
 .env
 *.local.js
+Rigo-AI/js/config.js
 
 # macOS
 .DS_Store

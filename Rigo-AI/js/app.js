@@ -1,5 +1,5 @@
 // Main application controller
-import CONFIG from './config.prod.js';
+import CONFIG from './config.js';
 import huggingFaceAPI from './api.js';
 import supabaseClient from './supabase-client.js';
 import localDB from './local-storage.js';

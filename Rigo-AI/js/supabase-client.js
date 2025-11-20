@@ -1,5 +1,5 @@
 // Supabase client initialization and utilities
-import CONFIG from './config.prod.js';
+import CONFIG from './config.js';
 
 class SupabaseClient {
     constructor() {

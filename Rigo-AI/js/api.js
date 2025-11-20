@@ -1,5 +1,5 @@
 // API utilities for Hugging Face integration
-import CONFIG from './config.prod.js';
+import CONFIG from './config.js';
 
 class HuggingFaceAPI {
     constructor() {
