@@ -1,10 +1,12 @@
-// Production configuration using environment variables
-// This file is used when deployed to Vercel
+// Production configuration
+// For Vercel: Set HF_API_TOKEN as environment variable in dashboard
+// For local: Use config.local.js (gitignored)
 
 const CONFIG = {
     // Hugging Face API Configuration
-    // Set these as environment variables in Vercel dashboard
-    HF_API_TOKEN: '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',
+    // Get your token from: https://huggingface.co/settings/tokens
+    // Add it to Vercel: Settings > Environment Variables > HF_API_TOKEN
+    HF_API_TOKEN: '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', // Replace with your token
     HF_MODEL_ID: 'facebook/bart-large-mnli',
     HF_VISION_MODEL: 'google/vit-base-patch16-224',
     HF_API_URL: 'https://api-inference.huggingface.co/models/',
