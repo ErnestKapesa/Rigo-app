@@ -1,9 +1,5 @@
 // Main application controller
-// Use config.prod.js for production, config.local.js for local development
-const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-const configModule = isProduction ? './config.prod.js' : './config.local.js';
-const { default: CONFIG } = await import(configModule);
-
+import CONFIG from './config.prod.js';
 import huggingFaceAPI from './api.js';
 import supabaseClient from './supabase-client.js';
 import localDB from './local-storage.js';

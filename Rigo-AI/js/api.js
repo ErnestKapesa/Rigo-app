@@ -1,7 +1,5 @@
 // API utilities for Hugging Face integration
-const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-const configModule = isProduction ? './config.prod.js' : './config.local.js';
-const { default: CONFIG } = await import(configModule);
+import CONFIG from './config.prod.js';
 
 class HuggingFaceAPI {
     constructor() {
